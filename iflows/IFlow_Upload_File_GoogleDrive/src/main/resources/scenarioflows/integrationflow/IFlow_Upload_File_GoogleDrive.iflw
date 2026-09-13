@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:ifl="http://sap.com/ifl/bpmn"
+  id="Definitions_2"
+  targetNamespace="http://sap.com/ifl/bpmn">
+  <bpmn2:collaboration id="Collaboration_2" name="Default Collaboration">
+    <bpmn2:extensionElements>
+      <ifl:property name="cmdVariantUri" value="ctype::IFlowVariant/cversion::2.6.0"/>
+    </bpmn2:extensionElements>
+    <bpmn2:participant id="Participant_Process_2" name="Integration Process - Upload File Google Drive" processRef="Process_2"/>
+    <bpmn2:participant id="Participant_Postman" name="Postman_Client"/>
+    <bpmn2:participant id="Participant_GoogleDrive" name="Google_Drive_API"/>
+    <bpmn2:participant id="Participant_MailServer" name="SMTP_Mail_Server"/>
+
+    <bpmn2:messageFlow id="MessageFlow_Postman" name="HTTPS" sourceRef="Participant_Postman" targetRef="StartEvent_2"/>
+    <bpmn2:messageFlow id="MessageFlow_GoogleDrive" name="HTTP_Receiver" sourceRef="ServiceTask_UploadGoogleDrive" targetRef="Participant_GoogleDrive"/>
+    <bpmn2:messageFlow id="MessageFlow_Mail" name="Mail_Receiver" sourceRef="SendTask_EmailNotification" targetRef="Participant_MailServer"/>
+  </bpmn2:collaboration>
+
+  <bpmn2:process id="Process_2" isExecutable="false">
+    <bpmn2:startEvent id="StartEvent_2" name="Start - HTTP Request (File Payload)">
+      <bpmn2:outgoing">SequenceFlow_201</bpmn2:outgoing">
+    </bpmn2:startEvent>
+
+    <bpmn2:sequenceFlow id="SequenceFlow_201" sourceRef="StartEvent_2" targetRef="ScriptTask_BuildMultipart"/>
+
+    <bpmn2:scriptTask id="ScriptTask_BuildMultipart" name="Build Multipart Payload for Google Drive">
+      <bpmn2:incoming>SequenceFlow_201</bpmn2:incoming>
+      <bpmn2:outgoing">SequenceFlow_202</bpmn2:outgoing>
+      <bpmn2:script>buildMultipartBody.groovy</bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:sequenceFlow id="SequenceFlow_202" sourceRef="ScriptTask_BuildMultipart" targetRef="ServiceTask_UploadGoogleDrive"/>
+
+    <bpmn2:serviceTask id="ServiceTask_UploadGoogleDrive" name="Post File to Google Drive API">
+      <bpmn2:incoming>SequenceFlow_202</bpmn2:incoming>
+      <bpmn2:outgoing">SequenceFlow_203</bpmn2:outgoing>
+      <bpmn2:extensionElements>
+        <ifl:property name="URL" value="https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"/>
+        <ifl:property name="HTTP_METHOD" value="POST"/>
+        <ifl:property name="AUTHENTICATION" value="OAuth2ClientCredentials"/>
+        <ifl:property name="CREDENTIAL_NAME" value="GOOGLE_DRIVE_OAUTH"/>
+      </bpmn2:extensionElements>
+    </bpmn2:serviceTask>
+
+    <bpmn2:sequenceFlow id="SequenceFlow_203" sourceRef="ServiceTask_UploadGoogleDrive" targetRef="ScriptTask_ParseResponse"/>
+
+    <bpmn2:scriptTask id="ScriptTask_ParseResponse" name="Parse Response &amp; Format Email">
+      <bpmn2:incoming>SequenceFlow_203</bpmn2:incoming>
+      <bpmn2:outgoing">SequenceFlow_204</bpmn2:outgoing>
+      <bpmn2:script>parseResponseAndFormatEmail.groovy</bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:sequenceFlow id="SequenceFlow_204" sourceRef="ScriptTask_ParseResponse" targetRef="SendTask_EmailNotification"/>
+
+    <bpmn2:sendTask id="SendTask_EmailNotification" name="Send Email Notification">
+      <bpmn2:incoming>SequenceFlow_204</bpmn2:incoming>
+      <bpmn2:outgoing">SequenceFlow_205</bpmn2:outgoing>
+    </bpmn2:sendTask>
+
+    <bpmn2:sequenceFlow id="SequenceFlow_205" sourceRef="SendTask_EmailNotification" targetRef="EndEvent_2"/>
+
+    <bpmn2:endEvent id="EndEvent_2" name="End">
+      <bpmn2:incoming>SequenceFlow_205</bpmn2:incoming>
+    </bpmn2:endEvent>
+  </bpmn2:process>
+</bpmn2:definitions>
