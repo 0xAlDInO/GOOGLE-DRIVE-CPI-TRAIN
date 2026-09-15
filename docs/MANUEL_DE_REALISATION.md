@@ -11,6 +11,7 @@ Ce manuel détaille la réalisation intégrale, pas à pas, de la solution d'int
 4. [Étape 4 : Création de l'IFlow Partie 2 (Uploader un fichier)](#étape-4--création-de-liflow-partie-2-uploader-un-fichier)
 5. [Étape 5 : Configuration et Exécution des Tests Postman](#étape-5--configuration-et-exécution-des-tests-postman)
 6. [Étape 6 : Validation et Vérification des Livrables](#étape-6--validation-et-vérification-des-livrables)
+7. [Étape 7 : Résolution du Problème d'Autorisation Google (Erreur 403 : access_denied)](#étape-7--résolution-du-problème-dautorisation-google-erreur-403--access_denied)
 
 ---
 
@@ -155,3 +156,33 @@ Ce manuel détaille la réalisation intégrale, pas à pas, de la solution d'int
 - [x] Spécification Technique (`SPECIFICATION_TECHNIQUE.md`) rédigée.
 - [x] Manuel de Réalisation (`MANUEL_DE_REALISATION.md`) rédigé étape par étape.
 - [x] Date limite de livraison respectée (Vendredi 18 septembre 2026).
+
+---
+
+## Étape 7 : Résolution du Problème d'Autorisation Google (Erreur 403 : `access_denied`)
+
+Si lors de l'authentification OAuth 2.0 vous rencontrez l'erreur suivante :
+> **"Accès bloqué : ondemand.com n'a pas terminé la procédure de validation de Google. L'appli est en cours de test et seuls les testeurs approuvés par le développeur y ont accès. Erreur 403 : access_denied"**
+
+### Cause du problème
+L'écran de consentement OAuth de votre projet Google Cloud est configuré en statut **"Testing" (En cours de test)**, et le compte Google utilisé (`ramanantsirahonana@gmail.com`) n'a pas été déclaré dans la liste des **Utilisateurs de test (Test users)** autorisés.
+
+### Solution Étape par Étape
+
+#### Option A : Ajouter votre compte Google aux Utilisateurs de Test (Recommandé pour le Dev/Test)
+1. Rendez-vous sur la [Console Google Cloud - Écran de consentement OAuth](https://console.cloud.google.com/apis/credentials/consent).
+2. Dans la section **Utilisateurs de test** (*Test users*), cliquez sur **+ ADD USERS** / **+ AJOUTER DES UTILISATEURS**.
+3. Indiquez l'adresse e-mail de votre compte Google : `ramanantsirahonana@gmail.com`.
+4. Cliquez sur **ENREGISTRER** (*SAVE*).
+5. Relancez le consentement OAuth 2.0 depuis SAP CPI / Navigateur. L'accès sera immédiatement débloqué.
+
+#### Option B : Publier l'application dans Google Cloud Console (*Publish App*)
+1. Rendez-vous sur la page **Écran de consentement OAuth**.
+2. Sous **Statut de la publication** (*Publishing status*), cliquez sur **PUBLIER L'APPLICATION** (*PUBLISH APP*).
+3. Confirmez la publication. L'application acceptera désormais les connexions de tout compte Google sans restriction de testeur.
+
+#### Option C : Utiliser un Compte de Service Google (*Service Account*)
+Pour une intégration automatique Server-to-Server sans dépendre du consentement interactif d'un compte utilisateur :
+1. Allez dans **API et services** > **Identifiants** > **Créer des identifiants** > **Compte de service**.
+2. Téléchargez la clé de compte de service (format JSON / P12).
+3. Importez les identifiants dans SAP CPI Security Material.
