@@ -108,23 +108,33 @@ Ce manuel détaille la réalisation intégrale, pas à pas, de la solution d'int
 
 ## Étape 4 : Création de l'IFlow Partie 2 (Uploader un fichier)
 
-### 4.1 Structure du Flux
-1. Créez un deuxième artefact IFlow nommé `IFlow_Upload_File_GoogleDrive`.
+### 4.1 Structure du Flux dans le Designer SAP CPI
+1. Créez un artefact IFlow nommé `IFlow_Upload_File_GoogleDrive`.
 2. Configurez l'adaptateur Sender HTTP:
+   - Relié du bloc **`postman`** vers le bloc **`Start`**.
    - **Address** : `/http/googledrive/uploadfile`
    - **HTTP Method** : `POST`
-3. Ajoutez un composant **Script Task** (Groovy Script) :
+3. Ajoutez le premier **Script Task** (Groovy Script) :
    - Fichier script : `buildMultipartBody.groovy`
-   - Construit le corps `multipart/related` contenant la section Metadata JSON et la section Fichier binaire.
-4. Ajoutez un composant **Request Reply / Service Task** (HTTP Receiver) :
-   - **Address** : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`
-   - **Method** : `POST`
-   - **Authentication** : `OAuth2 Client Credentials` (`GOOGLE_DRIVE_OAUTH`)
-5. Ajoutez un composant **Script Task** :
+   - Construit le corps `multipart/related` (Metadata JSON + Fichier binaire).
+4. Ajoutez le composant **Request Reply** dans la palette *Call* > *External Call* > *Request Reply* :
+   - Placer `Request Reply` après le `Script Task`.
+5. **IMPORTANT : Reliure vers le bloc `Receiver` (Configuration de l'Adaptateur HTTP)** :
+   - Dans le designer SAP CPI, le composant `Request Reply` lui-même ne contient pas la configuration HTTP.
+   - **Cliquez sur l'icône de flèche (`Connect`) sur la boîte `Request Reply` et faites glisser un trait vers le bloc extérieur `Receiver` (à droite)**.
+   - Un menu pop-up s'affiche pour choisir l'adaptateur : sélectionnez **`HTTP`**.
+   - Une flèche **`Message Flow`** (de couleur bleue) est ainsi créée entre `Request Reply` et `Receiver`.
+   - **Cliquez sur cette flèche `Message Flow`** entre `Request Reply` et `Receiver`.
+   - Dans le panneau de configuration du bas, sous l'onglet **Adapter Specific** :
+     - **Address** : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`
+     - **HTTP Method** : `POST`
+     - **Authentication** : `OAuth2 Client Credentials` (ou `OAuth2 Authorization Code`)
+     - **Credential Name** : `GOOGLE_DRIVE_OAUTH`
+6. Ajoutez le second **Script Task** après le `Request Reply` :
    - Fichier script : `parseResponseAndFormatEmail.groovy`
    - Parse la réponse JSON retournée par Google Drive (`id`, `name`) et formate l'e-mail de confirmation.
-6. Ajoutez l'adaptateur Mail SMTP pour envoyer la notification.
-7. Déployez l'IFlow (`Deploy`).
+7. Ajoutez l'adaptateur Mail SMTP relié à un second bloc Receiver pour envoyer la notification.
+8. Déployez l'IFlow (`Deploy`).
 
 ---
 
