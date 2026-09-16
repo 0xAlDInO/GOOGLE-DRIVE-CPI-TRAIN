@@ -11,6 +11,7 @@
     <bpmn2:participant id="Participant_1" name="Integration Process" processRef="Process_1">
       <bpmn2:extensionElements>
         <ifl:property name="cmdVariantUri" value="ctype::FlowElementVariant/cversion::1.1.0"/>
+        <ifl:property name="subType" value="IFlow"/>
         <ifl:property name="componentVersion" value="1.1.0"/>
       </bpmn2:extensionElements>
     </bpmn2:participant>
@@ -35,6 +36,7 @@
         <ifl:property name="componentVersion" value="1.4"/>
         <ifl:property name="urlPath" value="/http/googledrive/uploadfile"/>
         <ifl:property name="senderAuthType" value="RoleBased"/>
+        <ifl:property name="cmdVariantUri" value="ctype::AdapterVariant/cversion::1.4.0"/>
       </bpmn2:extensionElements>
     </bpmn2:messageFlow>
     <bpmn2:messageFlow id="MessageFlow_2" name="HTTP" sourceRef="CallActivity_1" targetRef="Participant_Receiver">
@@ -47,6 +49,7 @@
         <ifl:property name="httpAddressWithoutQuery" value="https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"/>
         <ifl:property name="authentication" value="OAuth2ClientCredentials"/>
         <ifl:property name="credentialName" value="GOOGLE_DRIVE_OAUTH"/>
+        <ifl:property name="cmdVariantUri" value="ctype::AdapterVariant/cversion::1.13.0"/>
       </bpmn2:extensionElements>
     </bpmn2:messageFlow>
   </bpmn2:collaboration>
@@ -67,6 +70,7 @@
     <bpmn2:scriptTask id="ScriptTask_1" name="Build Multipart Payload">
       <bpmn2:extensionElements>
         <ifl:property name="activityType" value="Script"/>
+        <ifl:property name="subType" value="GroovyScript"/>
         <ifl:property name="cmdVariantUri" value="ctype::FlowstepVariant/cversion::1.0.1"/>
         <ifl:property name="componentVersion" value="1.0.1"/>
         <ifl:property name="scriptSelect" value="GroovyScript"/>
@@ -79,6 +83,7 @@
     <bpmn2:callActivity id="CallActivity_1" name="Request Reply 1">
       <bpmn2:extensionElements>
         <ifl:property name="activityType" value="ExternalCall"/>
+        <ifl:property name="subType" value="RequestReply"/>
         <ifl:property name="cmdVariantUri" value="ctype::FlowstepVariant/cversion::1.1.0"/>
         <ifl:property name="componentVersion" value="1.1.0"/>
       </bpmn2:extensionElements>
@@ -89,6 +94,7 @@
     <bpmn2:scriptTask id="ScriptTask_2" name="Parse Response">
       <bpmn2:extensionElements>
         <ifl:property name="activityType" value="Script"/>
+        <ifl:property name="subType" value="GroovyScript"/>
         <ifl:property name="cmdVariantUri" value="ctype::FlowstepVariant/cversion::1.0.1"/>
         <ifl:property name="componentVersion" value="1.0.1"/>
         <ifl:property name="scriptSelect" value="GroovyScript"/>
