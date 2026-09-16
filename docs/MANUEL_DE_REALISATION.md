@@ -13,6 +13,7 @@ Ce manuel détaille la réalisation intégrale, pas à pas, de la solution d'int
 6. [Étape 6 : Validation et Vérification des Livrables](#étape-6--validation-et-vérification-des-livrables)
 7. [Étape 7 : Résolution du Problème d'Autorisation Google (Erreur 403 : access_denied)](#étape-7--résolution-du-problème-dautorisation-google-erreur-403--access_denied)
 8. [Étape 8 : Résolution des Erreurs de Configuration Visuelle IFlow Upload (`Request Reply 1` et Adapter `FTP`)](#étape-8--résolution-des-erreurs-de-configuration-visuelle-iflow-upload-request-reply-1-et-adapter-ftp)
+9. [Étape 9 : Guide d'Importation `.zip` et Résolution des Erreurs d'Upload ("Error occurred while fetching artifacts")](#étape-9--guide-dimportation-zip-et-résolution-des-erreurs-dupload-error-occurred-while-fetching-artifacts)
 
 ---
 
@@ -229,3 +230,33 @@ Si dans le designer SAP CPI votre flux `UPLOAD_FILE` présente des icônes d'err
 - Cliquez sur le bouton **Save** en haut à droite.
 - Cliquez sur **Deploy**.
 - Le statut passe à **Deployed** sans aucune erreur.
+
+---
+
+## Étape 9 : Guide d'Importation `.zip` et Résolution des Erreurs d'Upload ("Error occurred while fetching artifacts")
+
+Si lors de l'ouverture ou de la validation d'un artefact uploadé vous obtenez l'erreur :
+> **"Validation Error: Error occurred while fetching the artifacts"** ou **"Error while loading details"**
+
+### Cause
+Cette erreur survient lorsque l'artefact uploadé est en conflit de nom avec un flux déjà existant en mode brouillon/verrouillé (`UPLOAD_FILE`), ou si les métadonnées internes du package XML ne correspondent pas au nom saisi lors de l'upload.
+
+### Procédure de résolution étape par étape :
+
+#### Option 1 : Utiliser le fichier archive `UPLOAD_FILE.zip`
+1. Supprimez l'ancien brouillon verrouillé `UPLOAD_FILE` dans votre package Integration Suite.
+2. Cliquez sur **Add** > **Integration Flow** > **Upload**.
+3. Parcourez et sélectionnez `UPLOAD_FILE.zip`.
+4. Laissez Name et ID à `UPLOAD_FILE`.
+5. Cliquez sur **Add**.
+6. Ouvrez le flux `UPLOAD_FILE` pour vérifier qu'il s'affiche correctement sans aucune erreur.
+
+#### Option 2 : Importation manuelle des composants dans l'IFlow `UPLOAD_FILE` existant
+Si vous souhaitez conserver votre flux `UPLOAD_FILE` actuellement verrouillé :
+1. Ouvrez l'IFlow `UPLOAD_FILE` et cliquez sur **Edit**.
+2. Dans le menu du bas, sous **Resources** > **Tab Scripts**, cliquez sur **Add** > **Script** > **Groovy Script** et uploadez :
+   - `buildMultipartBody.groovy`
+   - `parseResponseAndFormatEmail.groovy`
+3. Cliquez sur le composant `Request Reply 1` et reliez-le au bloc `Receiver` avec l'adaptateur `HTTP`.
+4. Définissez l'URL `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart` et le credential `GOOGLE_DRIVE_OAUTH`.
+5. Supprimez l'adaptateur `FTP` en erreur et cliquez sur **Save** puis **Deploy**.
