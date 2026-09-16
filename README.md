@@ -21,6 +21,27 @@ Ce dépôt contient l'ensemble des artefacts et de la documentation technique n�
 
 ---
 
+## 📦 Guide de Déploiement et d'Importation `.zip` dans SAP CPI
+
+Pour intégrer le flux dans votre tenant SAP CPI, deux méthodes sont disponibles :
+
+### Méthode 1 : Importation directe du fichier `.zip` (Nouveau Flux)
+1. Rendez-vous dans **Design** > **Integrations and APIs** et ouvrez votre package (ex: `PACKAGE_GOOGLEDRIVEèCPIèRAL`).
+2. Cliquez sur **Add** > **Integration Flow** > sélectionnez l'option **Upload**.
+3. Choisissez le fichier `UPLOAD_FILE.zip` ou `IFlow_Upload_File_GoogleDrive.zip`.
+4. Renseignez l'ID `UPLOAD_FILE` (ou `IFlow_Upload_File_GoogleDrive`) et cliquez sur **Add**.
+5. L'IFlow est immédiatement prêt avec tous ses scripts Groovy et connecteurs.
+
+### Méthode 2 : Mise à jour d'un flux existant (`UPLOAD_FILE`)
+Si votre flux `UPLOAD_FILE` existe déjà en mode Brouillon/Draft :
+1. Dans l'éditeur CPI, supprimez l'adaptateur `FTP` incorrect reliant le nœud de fin.
+2. Reliez le bloc **`Request Reply 1`** au bloc **`Receiver`** à droite via un adaptateur **`HTTP`**.
+3. Configurez l'URL HTTP : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`, méthode `POST`, Security Material `GOOGLE_DRIVE_OAUTH`.
+4. Dans l'onglet **Resources** > **Scripts**, importez `buildMultipartBody.groovy` (Script 1) et `parseResponseAndFormatEmail.groovy` (Script 2).
+5. Sauvegardez et cliquez sur **Deploy**.
+
+---
+
 ## 🛠️ Architecture du Projet
 ```
 Google Drive ↔ SAP CPI ↔ Email
