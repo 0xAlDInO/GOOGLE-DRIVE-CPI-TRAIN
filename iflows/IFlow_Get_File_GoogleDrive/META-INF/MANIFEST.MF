@@ -1,7 +1,8 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: IFlow_Get_File_GoogleDrive
 Bundle-SymbolicName: IFlow_Get_File_GoogleDrive; singleton:=true
+Bundle-Name: IFlow_Get_File_GoogleDrive
 Bundle-Version: 1.0.0
 SAP-BundleType: IntegrationFlow
-Import-Package: com.sap.gateway.ip.core.customdev.util
+SAP-NodeType: IFLMAP
+SAP-RuntimeProfile: iflmap
+SAP-DescriptionLanguage: en_EN

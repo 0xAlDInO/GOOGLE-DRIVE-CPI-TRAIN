@@ -1,4 +1,0 @@
-description=Upload file to Google Drive REST API v3
-OriginBundle-SymbolicName=UPLOAD_FILE
-OriginBundle-Version=1.0.0
-Import-Package=com.sap.gateway.ip.core.customdev.util
