@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: UPLOAD_FILE; singleton:=true
+Bundle-Name: UPLOAD_FILE
+Bundle-Version: 1.0.0
+SAP-BundleType: IntegrationFlow
+SAP-NodeType: IFLMAP
+SAP-RuntimeProfile: iflmap
+SAP-DescriptionLanguage: en_EN

@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: IFlow_Upload_File_GoogleDrive; singleton:=true
+Bundle-Name: IFlow_Upload_File_GoogleDrive
+Bundle-Version: 1.0.0
+SAP-BundleType: IntegrationFlow
+SAP-NodeType: IFLMAP
+SAP-RuntimeProfile: iflmap
+SAP-DescriptionLanguage: en_EN

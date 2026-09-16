@@ -1,0 +1,123 @@
+{
+	"info": {
+		"_postman_id": "a8f34b92-7231-4a1d-8910-sapcpidrive12",
+		"name": "SAP CPI Google Drive Integration API",
+		"description": "Collection Postman pour tester l'intégration SAP CPI avec Google Drive (Récupération et Upload de fichiers).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Récupérer un fichier depuis Google Drive",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "fileId",
+						"value": "{{google_file_id}}",
+						"description": "ID du fichier Google Drive à récupérer"
+					},
+					{
+						"key": "fileName",
+						"value": "CV_SAPERP.PDF",
+						"description": "Nom optionnel du fichier pour la notification"
+					}
+				],
+				"url": {
+					"raw": "{{cpi_tenant_url}}/http/googledrive/getfile?fileId={{google_file_id}}&fileName=CV_SAPERP.PDF",
+					"host": [
+						"{{cpi_tenant_url}}"
+					],
+					"path": [
+						"http",
+						"googledrive",
+						"getfile"
+					],
+					"query": [
+						{
+							"key": "fileId",
+							"value": "{{google_file_id}}"
+						},
+						{
+							"key": "fileName",
+							"value": "CV_SAPERP.PDF"
+						}
+					]
+				},
+				"description": "Déclenche l'IFlow SAP CPI 'IFlow_Get_File_GoogleDrive' pour télécharger un fichier depuis Google Drive et envoyer une notification e-mail."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Uploader un fichier vers Google Drive",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "fileName",
+						"value": "DATA_CLIENT_SAPERP.csv",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "text/csv",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "ID_CLIENT;NOM;PRENOM;EMAIL;COMPANY\n1001;DUPONT;Jean;jean.dupont@example.com;SAP_CLIENT_1\n1002;MARTIN;Sophie;sophie.martin@example.com;SAP_CLIENT_2\n1003;LEGRAND;Pierre;pierre.legrand@example.com;SAP_CLIENT_3\n"
+				},
+				"url": {
+					"raw": "{{cpi_tenant_url}}/http/googledrive/uploadfile",
+					"host": [
+						"{{cpi_tenant_url}}"
+					],
+					"path": [
+						"http",
+						"googledrive",
+						"uploadfile"
+					]
+				},
+				"description": "Envoie un fichier (ex: CSV ou binaire) à SAP CPI, qui l'uploade ensuite sur Google Drive via l'API REST v3 et notifie par e-mail."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{cpi_client_secret}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{cpi_client_id}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "cpi_tenant_url",
+			"value": "https://your-cpi-tenant-runtime.haproxy.cfapps.eu10.hana.ondemand.com",
+			"type": "string"
+		},
+		{
+			"key": "cpi_client_id",
+			"value": "sb-clone-xxxxxx!b12345|it-rt-xxxx!b123",
+			"type": "string"
+		},
+		{
+			"key": "cpi_client_secret",
+			"value": "your-cpi-client-secret",
+			"type": "string"
+		},
+		{
+			"key": "google_file_id",
+			"value": "1A2b3C4d5E6f7G8h9I0j-ExampleId",
+			"type": "string"
+		}
+	]
+}
