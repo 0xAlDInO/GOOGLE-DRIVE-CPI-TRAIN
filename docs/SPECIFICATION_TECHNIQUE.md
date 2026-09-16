@@ -10,23 +10,60 @@ Ce document de spécification technique décrit l'architecture, les flux de donn
 
 ---
 
-## 2. Architecture et Diagramme de Flux
+## 2. Architecture et Diagramme de Flux par IFlow
 
-### 2.1 Schema Global
+### 2.1 Architecture IFlow 1 : `IFlow_Get_File_GoogleDrive` (Récupération de Fichier)
+
 ```
-+--------------+                +-------------------------+                +--------------------+
-|              |  1. HTTP Req   |                         |  2. REST API   |                    |
-|   Postman    | -------------> |  SAP Integration Suite  | -------------> |  Google Drive API  |
-|   Client     |                |        (SAP CPI)        | <------------- |       v3           |
-|              |                |                         |  3. JSON/File  +--------------------+
-+--------------+                +------------+------------+
-                                             |
-                                             | 4. SMTP Notification
-                                             v
-                                +-------------------------+
-                                |    Serveur Mail SMTP    |
-                                |    (Notification Mail)  |
-                                +-------------------------+
+ [ POSTMAN ]
+      |
+      | 1. HTTP GET Request (avec fileId en header/query param)
+      v
+ [ HTTPS Sender Adapter ]
+      |
+      v
+ [ Groovy Script: extractParams.groovy ]  --> Extrait 'fileId' & 'fileName' dans Exchange Properties
+      |
+      v
+ [ Request Reply ] ===( Message Flow HTTP GET )===> [ Google Drive REST API v3 ]
+                                                         (https://www.googleapis.com/drive/v3/files/{fileId}?alt=media)
+      | <=================( Binary File Content )===================|
+      v
+ [ Groovy Script: formatEmailNotification.groovy ]  --> Prépare le corps & sujet du mail de succès
+      |
+      v
+ [ Mail Sender Adapter (SMTP) ] ===( Send Mail )===> [ Serveur Mail SMTP / Destinataire ]
+      |
+      v
+   [ END ]
+```
+
+---
+
+### 2.2 Architecture IFlow 2 : `IFlow_Upload_File_GoogleDrive` (Upload de Fichier)
+
+```
+ [ POSTMAN ]
+      |
+      | 1. HTTP POST Request (avec le contenu du fichier dans le Body)
+      v
+ [ HTTPS Sender Adapter ]
+      |
+      v
+ [ Groovy Script: buildMultipartBody.groovy ]  --> Construit le payload 'multipart/related' (Metadata + Content)
+      |
+      v
+ [ Request Reply ] ===( Message Flow HTTP POST )===> [ Google Drive Upload API v3 ]
+                                                         (https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart)
+      | <=================( Response JSON: {id, name} )=============|
+      v
+ [ Groovy Script: parseResponseAndFormatEmail.groovy ]  --> Extrait 'driveFileId' & formate le mail de confirmation
+      |
+      v
+ [ Mail Sender Adapter (SMTP) ] ===( Send Mail )===> [ Serveur Mail SMTP / Destinataire ]
+      |
+      v
+   [ END ]
 ```
 
 ---
