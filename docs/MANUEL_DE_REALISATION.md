@@ -12,6 +12,7 @@ Ce manuel détaille la réalisation intégrale, pas à pas, de la solution d'int
 5. [Étape 5 : Configuration et Exécution des Tests Postman](#étape-5--configuration-et-exécution-des-tests-postman)
 6. [Étape 6 : Validation et Vérification des Livrables](#étape-6--validation-et-vérification-des-livrables)
 7. [Étape 7 : Résolution du Problème d'Autorisation Google (Erreur 403 : access_denied)](#étape-7--résolution-du-problème-dautorisation-google-erreur-403--access_denied)
+8. [Étape 8 : Résolution des Erreurs de Configuration Visuelle IFlow Upload (`Request Reply 1` et Adapter `FTP`)](#étape-8--résolution-des-erreurs-de-configuration-visuelle-iflow-upload-request-reply-1-et-adapter-ftp)
 
 ---
 
@@ -196,3 +197,35 @@ Pour une intégration automatique Server-to-Server sans dépendre du consentemen
 1. Allez dans **API et services** > **Identifiants** > **Créer des identifiants** > **Compte de service**.
 2. Téléchargez la clé de compte de service (format JSON / P12).
 3. Importez les identifiants dans SAP CPI Security Material.
+
+---
+
+## Étape 8 : Résolution des Erreurs de Configuration Visuelle IFlow Upload (`Request Reply 1` et Adapter `FTP`)
+
+Si dans le designer SAP CPI votre flux `UPLOAD_FILE` présente des icônes d'erreur rouges (`x`) sur le composant **`Request Reply 1`** et sur le canal **`FTP`** (comme illustré dans la console Designer) :
+
+### 1. Correction de l'erreur sur `Request Reply 1`
+- **Cause** : Le composant `Request Reply 1` n'est connecté à aucun `Receiver` externe via un `Message Flow`.
+- **Procédure de correction** :
+  1. Cliquez sur le composant `Request Reply 1` dans l'éditeur CPI.
+  2. Cliquez sur l'icône de flèche de connexion (**Connect**).
+  3. Faites glisser la flèche vers le bloc externe **`Receiver`** (à droite).
+  4. Dans le menu pop-up de sélection d'adaptateur, choisissez **`HTTP`**.
+  5. Sélectionnez la flèche bleue `Message Flow` ainsi créée.
+  6. Dans le panneau inférieur sous **Adapter Specific**, saisissez :
+     - **Address** : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`
+     - **HTTP Method** : `POST`
+     - **Authentication** : `OAuth2 Client Credentials`
+     - **Credential Name** : `GOOGLE_DRIVE_OAUTH`
+
+### 2. Correction de l'erreur sur l'Adaptateur `FTP`
+- **Cause** : Un canal `FTP` incorrect relie le nœud `End` (ou `Groovy Script 1`) vers `Receiver`. L'API Google Drive v3 utilise HTTPS REST, pas FTP.
+- **Procédure de correction** :
+  1. Cliquez sur le canal pointillé étiqueté **`FTP`** (qui comporte l'icône d'erreur rouge).
+  2. Cliquez sur l'icône de la **Corbeille** (ou appuyez sur la touche `Suppr`) pour supprimer cette liaison FTP incorrecte.
+  3. Connectez la sortie du second Script Task (`parseResponseAndFormatEmail.groovy`) au composant **`Send Task`** (Mail Adapter) ou directement au nœud **`End`**.
+
+### 3. Sauvegarde et Déploiement
+- Cliquez sur le bouton **Save** en haut à droite.
+- Cliquez sur **Deploy**.
+- Le statut passe à **Deployed** sans aucune erreur.
