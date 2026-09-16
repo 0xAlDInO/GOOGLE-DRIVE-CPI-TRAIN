@@ -121,6 +121,7 @@ Ce document de spécification technique décrit l'architecture, les flux de donn
      - Part 2: Payload binaire / contenu du fichier.
    - Positionne le header `Content-Type: multipart/related; boundary=-------314159265358979323846`.
 2. **HTTP Receiver Adapter (Google Drive API Upload)** :
+   - **Composant Designer** : Nœud `Request Reply` relié par une flèche `Message Flow` vers le participant externe `Google_Drive_API`. *(Remarque : Ne pas utiliser d'adaptateur FTP ni laisser le Request Reply non connecté)*.
    - **URL** : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`
    - **HTTP Method** : `POST`
    - **Authentication** : `OAuth2 Client Credentials`
