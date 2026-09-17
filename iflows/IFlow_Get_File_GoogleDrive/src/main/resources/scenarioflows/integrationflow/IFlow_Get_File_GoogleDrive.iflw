@@ -47,7 +47,7 @@
         <ifl:property name="httpRequestTimeout" value="60000"/>
         <ifl:property name="httpMethod" value="GET"/>
         <ifl:property name="httpAddressWithoutQuery" value="https://www.googleapis.com/drive/v3/files/${property.fileId}?alt=media"/>
-        <ifl:property name="authentication" value="OAuth2ClientCredentials"/>
+        <ifl:property name="authentication" value="OAuth2AuthorizationCode"/>
         <ifl:property name="credentialName" value="GOOGLE_DRIVE_OAUTH"/>
         <ifl:property name="cmdVariantUri" value="ctype::AdapterVariant/cversion::1.13.0"/>
       </bpmn2:extensionElements>
